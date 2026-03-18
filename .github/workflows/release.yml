@@ -48,12 +48,27 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
+      - name: Stamp version from git tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Stamping version: ${VERSION}"
+
+          # Stamp tauri.conf.json (mirrors macOS plutil → Info.plist pattern)
+          jq --arg v "$VERSION" '.package.version = $v' src-tauri/tauri.conf.json > tmp.json
+          mv tmp.json src-tauri/tauri.conf.json
+
+          # Stamp Cargo.toml
+          sed -i "s/^version = .*/version = \"${VERSION}\"/" src-tauri/Cargo.toml
+
+          # Stamp package.json
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+          echo "Version stamped in tauri.conf.json, Cargo.toml, and package.json"
+
       - name: Build release
         run: cargo tauri build
-
-      - name: Get version
-        id: version
-        run: echo "version=$(jq -r '.package.version' src-tauri/tauri.conf.json)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
