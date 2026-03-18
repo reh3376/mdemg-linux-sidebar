@@ -1,0 +1,24 @@
+{
+  "name": "mdemg-linux-sidebar",
+  "version": "0.1.0",
+  "description": "MDEMG Linux Sidebar - System tray companion for Multi-Dimensional Emergent Memory Graph",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.5.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0",
+    "vite": "^5.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reh3376/mdemg-linux-sidebar.git"
+  }
+}

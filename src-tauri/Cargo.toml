@@ -1,0 +1,24 @@
+[package]
+name = "mdemg-sidebar"
+version = "0.1.0"
+description = "MDEMG Linux Sidebar - System tray companion for Multi-Dimensional Emergent Memory Graph"
+authors = ["reh3376"]
+license = "MIT"
+repository = "https://github.com/reh3376/mdemg-linux-sidebar"
+edition = "2021"
+rust-version = "1.70"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+tauri = { version = "1", features = ["http-request", "fs-read-file", "fs-write-file", "path-all", "shell-open", "system-tray"] }
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+dirs = "5"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

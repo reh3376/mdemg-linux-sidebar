@@ -1,0 +1,72 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "mdemg-sidebar",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["http://localhost:*/*", "http://127.0.0.1:*/*"]
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": true,
+        "scope": ["$HOME/.config/mdemg-sidebar/**", "$HOME/.mdemg/**"]
+      },
+      "path": {
+        "all": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "DeveloperTool",
+      "copyright": "Copyright (c) 2026 reh3376",
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libappindicator3-1"]
+      },
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.png"
+      ],
+      "identifier": "com.reh3376.mdemg-sidebar",
+      "longDescription": "Linux system tray companion for MDEMG - Multi-Dimensional Emergent Memory Graph",
+      "shortDescription": "MDEMG Linux Sidebar"
+    },
+    "security": {
+      "csp": null
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": false
+    },
+    "windows": [
+      {
+        "title": "MDEMG Sidebar",
+        "width": 420,
+        "height": 680,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "skipTaskbar": true,
+        "visible": false
+      }
+    ]
+  }
+}

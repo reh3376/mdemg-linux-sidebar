@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libgtk-3-dev \
+            libsoup-3.0-dev \
+            javascriptcoregtk-4.1
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
+      - name: Build release
+        run: cargo tauri build
+
+      - name: Get version
+        id: version
+        run: echo "version=$(jq -r '.package.version' src-tauri/tauri.conf.json)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "MDEMG Sidebar v${{ steps.version.outputs.version }}"
+          body: |
+            ## MDEMG Linux Sidebar v${{ steps.version.outputs.version }}
+
+            ### Installation
+
+            **AppImage** (recommended — works on any Linux distro):
+            ```bash
+            chmod +x mdemg-sidebar_${{ steps.version.outputs.version }}_amd64.AppImage
+            ./mdemg-sidebar_${{ steps.version.outputs.version }}_amd64.AppImage
+            ```
+
+            **Debian/Ubuntu (.deb)**:
+            ```bash
+            sudo dpkg -i mdemg-sidebar_${{ steps.version.outputs.version }}_amd64.deb
+            ```
+
+            ### Requirements
+            - Linux desktop environment (GNOME, KDE, XFCE, etc.)
+            - MDEMG server running on localhost:9999
+          files: |
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+          draft: false
+          prerelease: false
