@@ -40,7 +40,7 @@
       "category": "DeveloperTool",
       "copyright": "Copyright (c) 2026 reh3376",
       "deb": {
-        "depends": ["libwebkit2gtk-4.0-37", "libayatana-appindicator3-1"]
+        "depends": ["libwebkit2gtk-4.1-0", "libayatana-appindicator3-1"]
       },
       "icon": [
         "icons/32x32.png",
