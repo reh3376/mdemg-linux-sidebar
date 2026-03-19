@@ -43,8 +43,24 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli
+      - name: Create build prerequisites
+        run: |
+          mkdir -p dist
+          cp src/index.html dist/
+          mkdir -p src-tauri/icons
+          python3 -c "
+          import struct, zlib
+          def png(w,h,c):
+            def ch(t,d):
+              r=t+d; return struct.pack('>I',len(d))+r+struct.pack('>I',zlib.crc32(r)&0xffffffff)
+            raw=b''.join(b'\x00'+bytes(c)*w for _ in range(h))
+            return b'\x89PNG\r\n\x1a\n'+ch(b'IHDR',struct.pack('>IIBBBBB',w,h,8,6,0,0,0))+ch(b'IDAT',zlib.compress(raw))+ch(b'IEND',b'')
+          for name,sz in [('icon.png',128),('128x128.png',128),('128x128@2x.png',256),('32x32.png',32)]:
+            open(f'src-tauri/icons/{name}','wb').write(png(sz,sz,[137,180,250,255]))
+          "
+
+      - name: Install Tauri CLI (v1.x for Tauri 1.x project)
+        run: cargo install tauri-cli --version "^1"
 
       - name: Build
         run: cargo tauri build
