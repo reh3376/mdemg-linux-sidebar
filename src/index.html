@@ -5,92 +5,318 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MDEMG Sidebar</title>
     <style>
+        /* ── Catppuccin Mocha Theme ─────────────────────────────────────── */
         :root {
             --bg-primary: #1e1e2e;
             --bg-secondary: #313244;
             --bg-surface: #45475a;
+            --bg-overlay: #585b70;
             --text-primary: #cdd6f4;
             --text-secondary: #a6adc8;
+            --text-muted: #6c7086;
             --accent: #89b4fa;
             --success: #a6e3a1;
             --warning: #f9e2af;
             --error: #f38ba8;
+            --border: #45475a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            padding: 16px;
             user-select: none;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        h1 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
+
+        /* ── Header ─────────────────────────────────────────────────────── */
+        .header {
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 12px 12px 6px;
         }
+        .header h1 { font-size: 16px; font-weight: 600; flex: 1; }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            display: inline-block; flex-shrink: 0;
+        }
+        .status-dot.online { background: var(--success); }
+        .status-dot.offline { background: var(--error); }
+
+        /* ── Instance Picker ────────────────────────────────────────────── */
+        #instance-picker {
+            padding: 0 12px 4px;
+            display: none;
+        }
+        .instance-select {
+            width: 100%;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        /* ── Tabs ───────────────────────────────────────────────────────── */
         .tabs {
             display: flex;
-            gap: 4px;
-            margin-bottom: 16px;
+            gap: 3px;
+            padding: 0 12px 8px;
             overflow-x: auto;
         }
         .tab {
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
             background: var(--bg-secondary);
             border: none;
             color: var(--text-secondary);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             white-space: nowrap;
+            transition: background 0.15s, color 0.15s;
         }
-        .tab.active {
-            background: var(--accent);
-            color: var(--bg-primary);
+        .tab:hover { background: var(--bg-surface); }
+        .tab.active { background: var(--accent); color: var(--bg-primary); }
+
+        /* ── Content ────────────────────────────────────────────────────── */
+        #content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
         }
-        .card {
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
+
+        /* ── Footer ─────────────────────────────────────────────────────── */
+        .footer {
+            padding: 4px 12px;
+            text-align: right;
+            font-size: 10px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
         }
-        .card h3 {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .status-dot.online { background: var(--success); }
-        .status-dot.offline { background: var(--error); }
-        .metric {
+
+        /* ── Info Row ───────────────────────────────────────────────────── */
+        .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
-            font-size: 13px;
+            align-items: baseline;
+            padding: 2px 0;
+            font-size: 12px;
+            line-height: 1.5;
         }
-        .metric-value { color: var(--accent); font-weight: 500; }
-        #content { min-height: 400px; }
-        .loading {
+        .info-label { color: var(--text-secondary); }
+        .info-value {
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            max-width: 55%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ── Section Header ─────────────────────────────────────────────── */
+        .section-header {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 0 2px;
+        }
+
+        /* ── Divider ────────────────────────────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 4px 0;
+        }
+
+        /* ── Buttons ────────────────────────────────────────────────────── */
+        .button-row {
+            display: flex;
+            gap: 6px;
+            padding: 4px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 4px 10px;
+            border-radius: 5px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.15s;
+        }
+        .btn:hover { background: var(--bg-overlay); }
+        .btn-primary { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-destructive { color: var(--error); border-color: var(--error); }
+        .btn-destructive:hover { background: var(--error); color: var(--bg-primary); }
+        .btn:disabled, .btn-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .btn-icon {
+            padding: 2px 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-icon:hover { color: var(--text-primary); }
+
+        /* ── Loading / Empty State ──────────────────────────────────────── */
+        .loading, .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* ── Logs ───────────────────────────────────────────────────────── */
+        .logs-container { display: flex; flex-direction: column; height: 100%; }
+        .log-search-bar {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0 6px;
+            align-items: center;
+        }
+        .log-search {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            padding: 3px 8px;
+            font-size: 11px;
+            outline: none;
+        }
+        .log-search::placeholder { color: var(--text-muted); }
+        .log-content {
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', monospace;
+            font-size: 9px;
+            line-height: 1.4;
+            padding: 4px 0;
+        }
+        .log-line {
+            padding: 0 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .log-error { color: var(--error); }
+        .log-warn { color: var(--warning); }
+
+        /* ── RSIC ───────────────────────────────────────────────────────── */
+        .cycle-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+        .cycle-icon { font-size: 12px; flex-shrink: 0; }
+        .cycle-tier {
+            font-family: monospace;
+            font-size: 9px;
+            font-weight: 600;
+            background: var(--bg-surface);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        .cycle-info { flex: 1; color: var(--text-secondary); }
+        .cycle-time { color: var(--text-muted); font-size: 10px; }
+
+        .calibration-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 0;
+            font-size: 11px;
+        }
+        .calibration-label {
+            width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             color: var(--text-secondary);
         }
+        .calibration-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-surface);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .calibration-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .calibration-pct {
+            width: 32px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .tier-picker {
+            display: flex;
+            gap: 2px;
+            padding: 4px 0;
+        }
+        .tier-btn {
+            flex: 1;
+            padding: 4px;
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+            transition: background 0.15s;
+        }
+        .tier-btn.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+        .tier-btn:hover:not(.active) { background: var(--bg-surface); }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            padding: 2px 0;
+            cursor: pointer;
+        }
+        .checkbox-label input[type="checkbox"] { accent-color: var(--accent); }
+
+        /* ── Scrollbar ──────────────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-surface); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--bg-overlay); }
     </style>
 </head>
 <body>
-    <h1>
+    <div class="header">
         <span class="status-dot offline" id="status-dot"></span>
-        MDEMG Sidebar
-    </h1>
+        <h1>MDEMG Sidebar</h1>
+    </div>
+
+    <div id="instance-picker"></div>
 
     <div class="tabs">
         <button class="tab active" data-tab="status">Status</button>
@@ -106,52 +332,10 @@
         <div class="loading">Connecting to MDEMG server...</div>
     </div>
 
-    <script type="module">
-        // Sidebar app will poll MDEMG server and render tabs
-        // Full implementation will use @tauri-apps/api for HTTP and filesystem access
+    <div class="footer">
+        <span id="footer-time"></span>
+    </div>
 
-        const tabs = document.querySelectorAll('.tab');
-        const content = document.getElementById('content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                loadTab(tab.dataset.tab);
-            });
-        });
-
-        async function checkHealth() {
-            try {
-                const resp = await fetch('http://localhost:9999/healthz');
-                if (resp.ok) {
-                    document.getElementById('status-dot').classList.replace('offline', 'online');
-                    return true;
-                }
-            } catch (e) {
-                document.getElementById('status-dot').classList.replace('online', 'offline');
-            }
-            return false;
-        }
-
-        async function loadTab(name) {
-            content.innerHTML = '<div class="loading">Loading...</div>';
-            const online = await checkHealth();
-            if (!online) {
-                content.innerHTML = '<div class="card"><h3>Server Offline</h3><p>MDEMG server is not running on localhost:9999</p></div>';
-                return;
-            }
-            // Tab content will be loaded from MDEMG API endpoints
-            content.innerHTML = `<div class="card"><h3>${name}</h3><p>Tab content loading...</p></div>`;
-        }
-
-        // Initial check
-        checkHealth().then(online => {
-            if (online) loadTab('status');
-        });
-
-        // Poll every 5 seconds
-        setInterval(checkHealth, 5000);
-    </script>
+    <script type="module" src="./main.js"></script>
 </body>
 </html>

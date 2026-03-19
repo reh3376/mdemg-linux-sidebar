@@ -18,9 +18,7 @@
         "open": true
       },
       "http": {
-        "all": true,
-        "request": true,
-        "scope": ["http://localhost:*/*", "http://127.0.0.1:*/*"]
+        "all": false
       },
       "fs": {
         "all": false,
@@ -30,6 +28,11 @@
       },
       "path": {
         "all": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true,
+        "save": true
       }
     },
     "bundle": {
