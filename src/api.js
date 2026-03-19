@@ -1,5 +1,5 @@
 // All invoke() calls wrapping Rust Tauri commands
-const { invoke } = window.__TAURI__.tauri;
+const { invoke } = window.__TAURI__.core;
 
 // ── Health / Status ─────────────────────────────────────────────────────────
 
@@ -88,3 +88,7 @@ export const scanForInstances = () => invoke('cmd_scan_for_instances');
 // ── Utility ─────────────────────────────────────────────────────────────────
 
 export const findMdemgBinary = () => invoke('cmd_find_mdemg_binary');
+
+// ── Platform ───────────────────────────────────────────────────────────────
+
+export const getHomeDir = () => invoke('cmd_get_home_dir');

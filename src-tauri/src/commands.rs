@@ -377,3 +377,10 @@ pub async fn cmd_scan_for_instances() -> Vec<MdemgInstance> {
 pub async fn cmd_find_mdemg_binary() -> Option<String> {
     cli_executor::find_mdemg_binary()
 }
+
+#[tauri::command]
+pub fn cmd_get_home_dir() -> String {
+    dirs::home_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|| "/home/user".to_string())
+}

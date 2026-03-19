@@ -1,5 +1,5 @@
 // MDEMG Linux Sidebar - System Tray Companion
-// Entry point for the Tauri application
+// Entry point for the Tauri v2 application
 
 #![cfg_attr(
     all(not(debug_assertions), target_os = "linux"),
@@ -15,73 +15,90 @@ mod instance_store;
 mod server_discovery;
 mod types;
 
-use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-};
-
-fn build_tray_menu() -> SystemTrayMenu {
-    let show = CustomMenuItem::new("show".to_string(), "Show Sidebar");
-    let status = CustomMenuItem::new("status".to_string(), "Status: Checking...");
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-
-    SystemTrayMenu::new()
-        .add_item(show)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(status)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit)
-}
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::Manager;
 
 fn main() {
-    let tray = SystemTray::new().with_menu(build_tray_menu());
-
     tauri::Builder::default()
-        .system_tray(tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick { .. } => {
-                if let Some(window) = app.get_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "show" => {
-                    if let Some(window) = app.get_window("main") {
-                        let _ = window.show();
-                        let _ = window.set_focus();
-                    }
-                }
-                "quit" => {
-                    std::process::exit(0);
-                }
-                _ => {}
-            },
-            _ => {}
-        })
-        .on_window_event(|event| {
+        .on_window_event(|window, event| {
             // Hide window on close instead of quitting
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event.event() {
-                event.window().hide().unwrap();
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
                 api.prevent_close();
             }
         })
         .setup(|app| {
-            // Background health polling — updates tray menu status text
-            let app_handle = app.handle();
+            // Build tray menu
+            let show = MenuItem::with_id(app, "show", "Show Sidebar", true, None::<&str>)?;
+            let status =
+                MenuItem::with_id(app, "status", "Status: Checking...", false, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+
+            let menu = Menu::with_items(
+                app,
+                &[
+                    &show,
+                    &PredefinedMenuItem::separator(app)?,
+                    &status,
+                    &PredefinedMenuItem::separator(app)?,
+                    &quit,
+                ],
+            )?;
+
+            // Use the default window icon (embedded from bundle.icon config)
+            let icon = app
+                .default_window_icon()
+                .cloned()
+                .expect("no default icon — generate icons before building");
+
+            let _tray = TrayIconBuilder::with_id("main")
+                .icon(icon)
+                .menu(&menu)
+                .menu_on_left_click(false)
+                .on_menu_event(|app, event| match event.id().as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    "quit" => {
+                        std::process::exit(0);
+                    }
+                    _ => {}
+                })
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                })
+                .build(app)?;
+
+            // Background health polling — updates tray tooltip with server status
+            let app_handle = app.handle().clone();
             std::thread::spawn(move || {
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let client = api_client::ApiClient::new();
                 loop {
                     let healthy = rt.block_on(client.health_check("http://localhost:9999"));
                     let status_text = if healthy {
-                        "Status: Running"
+                        "MDEMG: Running"
                     } else {
-                        "Status: Offline"
+                        "MDEMG: Offline"
                     };
-                    let _ = app_handle
-                        .tray_handle()
-                        .get_item("status")
-                        .set_title(status_text);
+                    if let Some(tray) = app_handle.tray_by_id("main") {
+                        let _ = tray.set_tooltip(Some(status_text));
+                    }
                     std::thread::sleep(std::time::Duration::from_secs(10));
                 }
             });
@@ -138,6 +155,7 @@ fn main() {
             commands::cmd_scan_for_instances,
             // Utility
             commands::cmd_find_mdemg_binary,
+            commands::cmd_get_home_dir,
         ])
         .run(tauri::generate_context!())
         .expect("error while running MDEMG Sidebar");

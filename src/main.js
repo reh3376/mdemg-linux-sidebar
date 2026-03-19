@@ -122,8 +122,7 @@ async function loadInstances() {
 
 async function getHomeDir() {
   try {
-    const { homeDir } = window.__TAURI__.path;
-    return await homeDir();
+    return await api.getHomeDir();
   } catch {
     return '/home/user';
   }

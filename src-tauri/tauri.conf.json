@@ -1,63 +1,16 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "productName": "mdemg-sidebar",
+  "version": "0.1.0",
+  "identifier": "com.reh3376.mdemg-sidebar",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "mdemg-sidebar",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      },
-      "http": {
-        "all": false
-      },
-      "fs": {
-        "all": false,
-        "readFile": true,
-        "writeFile": true,
-        "scope": ["$HOME/.config/mdemg-sidebar/**", "$HOME/.mdemg/**"]
-      },
-      "path": {
-        "all": true
-      },
-      "dialog": {
-        "all": false,
-        "open": true,
-        "save": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "Copyright (c) 2026 reh3376",
-      "deb": {
-        "depends": ["libwebkit2gtk-4.1-0", "libayatana-appindicator3-1"]
-      },
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.png"
-      ],
-      "identifier": "com.reh3376.mdemg-sidebar",
-      "longDescription": "Linux system tray companion for MDEMG - Multi-Dimensional Emergent Memory Graph",
-      "shortDescription": "MDEMG Linux Sidebar"
-    },
+  "app": {
     "security": {
       "csp": null
-    },
-    "systemTray": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": false
     },
     "windows": [
       {
@@ -70,6 +23,25 @@
         "skipTaskbar": true,
         "visible": false
       }
-    ]
+    ],
+    "withGlobalTauri": true
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "Copyright (c) 2026 reh3376",
+    "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libayatana-appindicator3-1"]
+      }
+    },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "longDescription": "Linux system tray companion for MDEMG - Multi-Dimensional Emergent Memory Graph",
+    "shortDescription": "MDEMG Linux Sidebar"
   }
 }
