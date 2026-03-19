@@ -143,6 +143,9 @@ fn main() {
             // Export / Import
             commands::export_space,
             commands::import_space,
+            // Teardown
+            commands::teardown_instance,
+            commands::teardown_dry_run,
             // Discovery
             commands::cmd_discover_port,
             commands::cmd_discover_pid,

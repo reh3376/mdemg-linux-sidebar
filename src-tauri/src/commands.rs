@@ -384,3 +384,29 @@ pub fn cmd_get_home_dir() -> String {
         .map(|p| p.to_string_lossy().to_string())
         .unwrap_or_else(|| "/home/user".to_string())
 }
+
+// ── Teardown ───────────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn teardown_instance(
+    project_dir: Option<String>,
+    do_export: bool,
+    keep_data: bool,
+) -> Result<String, String> {
+    let mut args = vec!["teardown", "--yes", "--format", "json"];
+    if do_export {
+        args.push("--export");
+    }
+    if keep_data {
+        args.push("--keep-data");
+    }
+    cli_executor::execute(&args, project_dir.as_deref())
+}
+
+#[tauri::command]
+pub async fn teardown_dry_run(project_dir: Option<String>) -> Result<String, String> {
+    cli_executor::execute(
+        &["teardown", "--dry-run", "--format", "json"],
+        project_dir.as_deref(),
+    )
+}

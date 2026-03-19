@@ -69,6 +69,13 @@ export const exportSpace = (projectDir, spaceId, profile, outputPath) =>
 export const importSpace = (projectDir, inputPath, consolidate, reEmbed) =>
   invoke('import_space', { projectDir, inputPath, consolidate, reEmbed });
 
+// ── Teardown ───────────────────────────────────────────────────────────────
+
+export const teardownInstance = (projectDir, doExport, keepData) =>
+  invoke('teardown_instance', { projectDir, doExport, keepData });
+export const teardownDryRun = (projectDir) =>
+  invoke('teardown_dry_run', { projectDir });
+
 // ── Discovery ───────────────────────────────────────────────────────────────
 
 export const discoverPort = (projectDir) => invoke('cmd_discover_port', { projectDir });

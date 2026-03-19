@@ -56,6 +56,9 @@ function setupTabs() {
   subscribe('rsicCalibration', () => { if (getState().activeTab === 'rsic') renderActiveTab(); });
   subscribe('poolMetrics', () => { if (getState().activeTab === 'neo4j') renderActiveTab(); });
   subscribe('spacesData', () => { if (getState().activeTab === 'memory') renderActiveTab(); });
+  subscribe('teardownStatus', () => { if (getState().activeTab === 'config') renderActiveTab(); });
+  subscribe('isTeardownRunning', () => { if (getState().activeTab === 'config') renderActiveTab(); });
+  subscribe('teardownPreview', () => { if (getState().activeTab === 'config') renderActiveTab(); });
 
   // Update footer timestamp
   subscribe('lastUpdated', () => updateFooter());
