@@ -410,3 +410,12 @@ pub async fn teardown_dry_run(project_dir: Option<String>) -> Result<String, Str
         project_dir.as_deref(),
     )
 }
+
+#[tauri::command]
+pub fn default_export_path(space_id: String) -> String {
+    let home = dirs::home_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|| "/home/user".to_string());
+    let ts = chrono::Local::now().format("%Y%m%dT%H%M%S");
+    format!("{}/{}-teardown-{}.mdemg", home, space_id, ts)
+}

@@ -8,6 +8,7 @@ import { renderNeo4j } from './tabs/neo4j.js';
 import { renderConfig } from './tabs/config.js';
 import { renderLogs } from './tabs/logs.js';
 import { renderRSIC } from './tabs/rsic.js';
+import { renderTeardownWizardModal } from './tabs/teardown-wizard.js';
 import { timeAgo } from './utils/formatting.js';
 
 const TAB_RENDERERS = {
@@ -56,9 +57,12 @@ function setupTabs() {
   subscribe('rsicCalibration', () => { if (getState().activeTab === 'rsic') renderActiveTab(); });
   subscribe('poolMetrics', () => { if (getState().activeTab === 'neo4j') renderActiveTab(); });
   subscribe('spacesData', () => { if (getState().activeTab === 'memory') renderActiveTab(); });
-  subscribe('teardownStatus', () => { if (getState().activeTab === 'config') renderActiveTab(); });
-  subscribe('isTeardownRunning', () => { if (getState().activeTab === 'config') renderActiveTab(); });
-  subscribe('teardownPreview', () => { if (getState().activeTab === 'config') renderActiveTab(); });
+  subscribe('teardownWizardOpen', renderTeardownWizardModal);
+  subscribe('teardownWizardStep', renderTeardownWizardModal);
+  subscribe('teardownWizardDryRun', renderTeardownWizardModal);
+  subscribe('teardownWizardResult', renderTeardownWizardModal);
+  subscribe('teardownWizardExportStatus', renderTeardownWizardModal);
+  subscribe('teardownWizardExportComplete', renderTeardownWizardModal);
 
   // Update footer timestamp
   subscribe('lastUpdated', () => updateFooter());

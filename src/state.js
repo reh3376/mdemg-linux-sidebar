@@ -45,6 +45,15 @@ const state = {
   isRSICCycleRunning: false,
   isExportImportRunning: false,
   exportImportStatus: '',
+
+  // Teardown wizard
+  teardownWizardOpen: false,
+  teardownWizardStep: 'confirm',
+  teardownWizardDryRun: null,
+  teardownWizardResult: null,
+  teardownWizardError: null,
+  teardownWizardExportStatus: '',
+  teardownWizardExportComplete: false,
 };
 
 const subscribers = {};

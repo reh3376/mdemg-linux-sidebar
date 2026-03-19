@@ -75,6 +75,7 @@ export const teardownInstance = (projectDir, doExport, keepData) =>
   invoke('teardown_instance', { projectDir, doExport, keepData });
 export const teardownDryRun = (projectDir) =>
   invoke('teardown_dry_run', { projectDir });
+export const defaultExportPath = (spaceId) => invoke('default_export_path', { spaceId });
 
 // ── Discovery ───────────────────────────────────────────────────────────────
 

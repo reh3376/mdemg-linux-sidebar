@@ -146,6 +146,7 @@ fn main() {
             // Teardown
             commands::teardown_instance,
             commands::teardown_dry_run,
+            commands::default_export_path,
             // Discovery
             commands::cmd_discover_port,
             commands::cmd_discover_pid,
