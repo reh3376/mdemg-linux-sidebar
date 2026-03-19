@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -23,8 +23,8 @@ jobs:
             librsvg2-dev \
             patchelf \
             libgtk-3-dev \
-            libsoup2.4-dev \
-            javascriptcoregtk-4.0-dev
+            libssl-dev \
+            libayatana-appindicator3-dev
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
