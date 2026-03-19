@@ -27,6 +27,13 @@ jobs:
             libsoup2.4-dev \
             libjavascriptcoregtk-4.1-dev
 
+      - name: Create pkg-config compat symlinks (Tauri 1.x expects 4.0, Ubuntu 24.04 has 4.1)
+        run: |
+          PKG_DIR=/usr/lib/x86_64-linux-gnu/pkgconfig
+          sudo ln -sf $PKG_DIR/javascriptcoregtk-4.1.pc $PKG_DIR/javascriptcoregtk-4.0.pc
+          sudo ln -sf $PKG_DIR/webkit2gtk-4.1.pc $PKG_DIR/webkit2gtk-4.0.pc
+          sudo ln -sf $PKG_DIR/webkit2gtk-web-extension-4.1.pc $PKG_DIR/webkit2gtk-web-extension-4.0.pc
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
