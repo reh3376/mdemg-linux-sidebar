@@ -44,10 +44,11 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Create build prerequisites
+      - name: Build frontend
+        run: npm run build
+
+      - name: Generate icons
         run: |
-          mkdir -p dist
-          cp src/index.html dist/
           mkdir -p src-tauri/icons
           python3 -c "
           import struct, zlib
