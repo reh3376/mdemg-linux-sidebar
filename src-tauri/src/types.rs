@@ -416,6 +416,61 @@ pub struct StaleEdgeResponse {
     pub hidden_with_member_changes: i64,
 }
 
+// MARK: - Synergy
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SynergyStatusWrapper {
+    pub data: SynergyStatusResponse,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SynergyStatusResponse {
+    pub jiminy_healthy: bool,
+    pub claude_md_lines: i64,
+    pub memory_md_lines: i64,
+    pub auto_memory_files: i64,
+    pub auto_memory_lines: i64,
+    pub overflow_events_24h: i64,
+    pub synergy_health: f64,
+    pub recovery_buffer_space_entries: i64,
+    pub recovery_buffer_local_entries: i64,
+    pub recovery_buffer_total: i64,
+    pub migration_status: String,
+    pub migration_date: String,
+}
+
+// MARK: - Jiminy
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JiminyHealthResponse {
+    pub status: String,
+    pub enabled: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JiminyReadyResponse {
+    pub status: String,
+    pub enabled: bool,
+    pub features: Option<HashMap<String, bool>>,
+    pub services: Option<HashMap<String, String>>,
+    pub config: Option<serde_json::Value>,
+    pub stats: Option<serde_json::Value>,
+    pub protocol_metrics: Option<serde_json::Value>,
+    pub message: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JiminyTierEffectivenessWrapper {
+    pub data: JiminyTierEffectivenessData,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct JiminyTierEffectivenessData {
+    pub overall_tier_comprehension: Option<Vec<f64>>,
+    pub tier_outcome_count: Option<Vec<i64>>,
+    pub message: Option<String>,
+}
+
 // MARK: - Instance Management
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

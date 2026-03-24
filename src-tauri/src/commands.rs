@@ -159,6 +159,86 @@ pub async fn trigger_rsic_cycle(
         .await
 }
 
+// ── Synergy ──────────────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn get_synergy_status(
+    base_url: String,
+    space_id: String,
+) -> Result<SynergyStatusResponse, String> {
+    let wrapper: SynergyStatusWrapper = client()
+        .get::<SynergyStatusWrapper>(
+            &base_url,
+            "/v1/synergy/status",
+            Some(&[("space_id", &space_id)]),
+        )
+        .await?;
+    Ok(wrapper.data)
+}
+
+// ── Jiminy ───────────────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn get_jiminy_health(base_url: String) -> Result<JiminyHealthResponse, String> {
+    // /v1/jiminy/healthz returns 200 when enabled, 503 when disabled.
+    // Both return parseable JSON. Try normal GET first; on HTTP error, return disabled.
+    match client()
+        .get::<JiminyHealthResponse>(&base_url, "/v1/jiminy/healthz", None)
+        .await
+    {
+        Ok(resp) => Ok(resp),
+        Err(_) => Ok(JiminyHealthResponse {
+            status: "disabled".into(),
+            enabled: false,
+        }),
+    }
+}
+
+#[tauri::command]
+pub async fn get_jiminy_ready(base_url: String) -> Result<JiminyReadyResponse, String> {
+    match client()
+        .get::<JiminyReadyResponse>(
+            &base_url,
+            "/v1/jiminy/ready",
+            Some(&[("stats", "true")]),
+        )
+        .await
+    {
+        Ok(resp) => Ok(resp),
+        Err(_) => Ok(JiminyReadyResponse {
+            status: "disabled".into(),
+            enabled: false,
+            features: None,
+            services: None,
+            config: None,
+            stats: None,
+            protocol_metrics: None,
+            message: Some("Jiminy not available".into()),
+        }),
+    }
+}
+
+#[tauri::command]
+pub async fn get_jiminy_tier_effectiveness(
+    base_url: String,
+) -> Result<JiminyTierEffectivenessData, String> {
+    match client()
+        .get::<JiminyTierEffectivenessWrapper>(
+            &base_url,
+            "/v1/jiminy/protocol/tier-effectiveness",
+            None,
+        )
+        .await
+    {
+        Ok(wrapper) => Ok(wrapper.data),
+        Err(_) => Ok(JiminyTierEffectivenessData {
+            overall_tier_comprehension: None,
+            tier_outcome_count: None,
+            message: Some("Tier effectiveness not available".into()),
+        }),
+    }
+}
+
 // ── Actions ─────────────────────────────────────────────────────────────────
 
 #[tauri::command]

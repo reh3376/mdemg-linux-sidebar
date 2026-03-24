@@ -121,6 +121,12 @@ fn main() {
             commands::get_rsic_history,
             commands::get_rsic_calibration,
             commands::trigger_rsic_cycle,
+            // Synergy
+            commands::get_synergy_status,
+            // Jiminy
+            commands::get_jiminy_health,
+            commands::get_jiminy_ready,
+            commands::get_jiminy_tier_effectiveness,
             // Actions
             commands::freeze_learning,
             commands::unfreeze_learning,

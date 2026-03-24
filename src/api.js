@@ -22,6 +22,18 @@ export const getFreezeStatus = (baseUrl, spaceId) =>
 export const getStaleEdgeStats = (baseUrl, spaceId) =>
   invoke('get_stale_edge_stats', { baseUrl, spaceId });
 
+// ── Synergy ──────────────────────────────────────────────────────────────────
+
+export const getSynergyStatus = (baseUrl, spaceId) =>
+  invoke('get_synergy_status', { baseUrl, spaceId });
+
+// ── Jiminy ───────────────────────────────────────────────────────────────────
+
+export const getJiminyHealth = (baseUrl) => invoke('get_jiminy_health', { baseUrl });
+export const getJiminyReady = (baseUrl) => invoke('get_jiminy_ready', { baseUrl });
+export const getJiminyTierEffectiveness = (baseUrl) =>
+  invoke('get_jiminy_tier_effectiveness', { baseUrl });
+
 // ── RSIC ────────────────────────────────────────────────────────────────────
 
 export const getRsicHealth = (baseUrl) => invoke('get_rsic_health', { baseUrl });

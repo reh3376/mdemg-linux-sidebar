@@ -22,6 +22,10 @@ const state = {
   rsicHealth: null,
   rsicHistory: [],
   rsicCalibration: {},
+  synergyStatus: null,
+  jiminyHealth: null,
+  jiminyReady: null,
+  jiminyTierEffectiveness: null,
 
   // Neo4j container
   neo4jRunning: false,

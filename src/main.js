@@ -8,6 +8,8 @@ import { renderNeo4j } from './tabs/neo4j.js';
 import { renderConfig } from './tabs/config.js';
 import { renderLogs } from './tabs/logs.js';
 import { renderRSIC } from './tabs/rsic.js';
+import { renderSynergy } from './tabs/synergy.js';
+import { renderJiminy } from './tabs/jiminy.js';
 import { renderTeardownWizardModal } from './tabs/teardown-wizard.js';
 import { timeAgo } from './utils/formatting.js';
 
@@ -19,6 +21,8 @@ const TAB_RENDERERS = {
   config: renderConfig,
   logs: renderLogs,
   rsic: renderRSIC,
+  synergy: renderSynergy,
+  jiminy: renderJiminy,
 };
 
 // ── Initialization ──────────────────────────────────────────────────────────
@@ -55,6 +59,10 @@ function setupTabs() {
   subscribe('rsicHealth', () => { if (getState().activeTab === 'rsic') renderActiveTab(); });
   subscribe('rsicHistory', () => { if (getState().activeTab === 'rsic') renderActiveTab(); });
   subscribe('rsicCalibration', () => { if (getState().activeTab === 'rsic') renderActiveTab(); });
+  subscribe('synergyStatus', () => { if (getState().activeTab === 'synergy') renderActiveTab(); });
+  subscribe('jiminyHealth', () => { if (getState().activeTab === 'jiminy') renderActiveTab(); });
+  subscribe('jiminyReady', () => { if (getState().activeTab === 'jiminy') renderActiveTab(); });
+  subscribe('jiminyTierEffectiveness', () => { if (getState().activeTab === 'jiminy') renderActiveTab(); });
   subscribe('poolMetrics', () => { if (getState().activeTab === 'neo4j') renderActiveTab(); });
   subscribe('spacesData', () => { if (getState().activeTab === 'memory') renderActiveTab(); });
   subscribe('teardownWizardOpen', renderTeardownWizardModal);
@@ -183,6 +191,10 @@ function switchInstance(instanceId) {
     rsicHealth: null,
     rsicHistory: [],
     rsicCalibration: {},
+    synergyStatus: null,
+    jiminyHealth: null,
+    jiminyReady: null,
+    jiminyTierEffectiveness: null,
   });
 
   // Immediate poll
@@ -271,6 +283,10 @@ async function pollStats() {
       api.getRsicHealth(s.baseUrl),
       api.getRsicHistory(s.baseUrl, s.spaceId, 10),
       api.getRsicCalibration(s.baseUrl),
+      api.getSynergyStatus(s.baseUrl, s.spaceId),
+      api.getJiminyHealth(s.baseUrl),
+      api.getJiminyReady(s.baseUrl),
+      api.getJiminyTierEffectiveness(s.baseUrl),
     ]);
 
     const patch = {};
@@ -283,6 +299,10 @@ async function pollStats() {
     if (results[6].status === 'fulfilled') patch.rsicHealth = results[6].value;
     if (results[7].status === 'fulfilled') patch.rsicHistory = results[7].value.history || [];
     if (results[8].status === 'fulfilled') patch.rsicCalibration = results[8].value.calibration || {};
+    if (results[9].status === 'fulfilled') patch.synergyStatus = results[9].value;
+    if (results[10].status === 'fulfilled') patch.jiminyHealth = results[10].value;
+    if (results[11].status === 'fulfilled') patch.jiminyReady = results[11].value;
+    if (results[12].status === 'fulfilled') patch.jiminyTierEffectiveness = results[12].value;
 
     setState(patch);
   } catch (e) {

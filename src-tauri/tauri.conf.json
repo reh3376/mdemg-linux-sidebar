@@ -1,6 +1,6 @@
 {
   "productName": "mdemg-sidebar",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "identifier": "com.reh3376.mdemg-sidebar",
   "build": {
     "beforeBuildCommand": "npm run build",
